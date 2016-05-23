@@ -10,7 +10,7 @@ public class BDD {
         String driverName = "com.mysql.jdbc.Driver";
         Class.forName(driverName);
 
-        String url = "jdbc:mysql://134.214.113.155/p1513906";
+        String url = "jdbc:mysql://iutdoua-webetu.univ-lyon1.fr/p1513906";
         String utilisateur = "p1513906";
         String motDePasse = "249281";
 
