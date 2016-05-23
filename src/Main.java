@@ -28,31 +28,61 @@ public class Main {
                 }
             }
         }
-
+        int nbjour = listeEquipes.size(); 
+        String[][] matches = new String[((listeEquipes.size())/2)][2];
+        System.out.println(matches.length);
+        for (int i = 0; i<matches.length ; i++){
+            for (int j = 0; j< matches[i].length; j++){
+                matches[i][j] = new String(listeEquipes.get(0).toString());
+                listeEquipes.remove(0);
+            }
+        }
+       
+      for(int i =0; i<matches.length;i++)System.out.println(matches[i][0] + " - " + matches[i][1]);
+            
+        for (int j = 1; j<nbjour;j++){
         ArrayList<String> listeJour1 = new ArrayList<>();
-        while (!listeEquipes.isEmpty()) {
             Random randomizer = new Random();
             String eqDom;
             String eqExt;
-            String match;
-            do {
-                do {
-                    eqDom = listeEquipes.get(randomizer.nextInt(listeEquipes.size()));
-                    eqExt = listeEquipes.get(randomizer.nextInt(listeEquipes.size()));
-                } while (eqDom.equals(eqExt));
+            String match = "";
+            for (int k = 0; k<matches.length; k++){
+                    eqDom = matches[k][0];
+                    eqExt = matches[k][1];
                 match = eqDom + " - " + eqExt;
-            } while (listeMatches.indexOf(match) == -1);
-            listeEquipes.remove(eqDom);
-            listeEquipes.remove(eqExt);
-            listeMatches.remove(match);
+                //System.out.println(eqDom + eqExt);
+            
+            String temp = "";
+            String temp2 = "";
+            
+            for (int l = matches.length-1; l>=0;l--){
+                if (l == matches.length-1){
+                    temp = matches[l][0];
+                    matches[l][0] = matches[l][1];
+                    matches[l][1] = matches[l-1][1];
+                }
+                else if (l == 0) {
+                    matches[l][1] = temp; 
+                }
 
+                else {
+                    temp2 = matches[l][0];
+                    matches[l][0] = temp;
+                    matches[l][1] = matches[l-1][1];
+                    temp =temp2;
+                }
+                }
+            System.out.println("\nJournee "+ j);
+            for(int i =0; i<matches.length;i++)System.out.println(matches[i][0] + " - " + matches[i][1]);
+            }
+            /*listeMatches.remove(match);
             listeJour1.add(match);
-        }
-
         listeJour1.stream().forEach((i) -> {
             System.out.println(i);
-        });
-        BDD.closeConnection();
+        });*/
+       listeJour1.clear();
+    }
+         BDD.closeConnection();
     }
 
 }
