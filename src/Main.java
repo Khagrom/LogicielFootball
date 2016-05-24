@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         String[][] res = null;
-        initCoupe(3);
+        initCoupe(1);
 
     }
 
