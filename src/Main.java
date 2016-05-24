@@ -7,59 +7,91 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         String[][] res = null;
-        res = initCoupe(98);
-        initChampionnat(2015);
-        
-       }
-    
-    
-    
-public static String[][] initCoupe(int idCoupe) throws Exception{
-            BDD BDD = new BDD();
+        initCoupe(3);
+
+    }
+
+    public static void initCoupe(int idCoupe) throws Exception {
+        BDD BDD = new BDD();
         int i = 0;
         ArrayList<String> listeCoupeNationale = new ArrayList<>();
-        try (ResultSet req = BDD.getStatement().executeQuery("SELECT nom, idPays FROM coupeNationale where id = " + idCoupe + ";")){
-                while (req.next()) {
-                    listeCoupeNationale.add(req.getString("nom"));
-                    i = req.getInt("idPays");
-                }
-                for (String coupeNationale : listeCoupeNationale) {
-                    ArrayList<String> listeEquipesPays = new ArrayList<>();
-                    int nombreMatchQualif;
-                    try (ResultSet req2 = BDD.getStatement().executeQuery("SELECT distinct equipe.nom, equipe.id from equipe,championnat, pays where championnat.idPays =" + i + " and championnat.id = equipe.idChampionnat;")) {
-                        while (req2.next()) {
-                            listeEquipesPays.add(req2.getString("equipe.nom"));
-                        }
-                        System.out.println("\n" + coupeNationale);
-                        System.out.println(listeEquipesPays.size() - 32);
-                        nombreMatchQualif = (listeEquipesPays.size() - 32);
+        try (ResultSet req = BDD.getStatement().executeQuery("SELECT nom, idPays FROM coupeNationale where id = " + idCoupe + ";")) {
+            while (req.next()) {
+                listeCoupeNationale.add(req.getString("nom"));
+                i = req.getInt("idPays");
+            }
+            for (String coupeNationale : listeCoupeNationale) {
+                ArrayList<String> listeEquipesPays = new ArrayList<>();
+                int nombreMatchQualif;
+                try (ResultSet req2 = BDD.getStatement().executeQuery("SELECT distinct equipe.nom, equipe.id from equipe,championnat, pays where championnat.idPays =" + i + " and championnat.id = equipe.idChampionnat;")) {
+                    while (req2.next()) {
+                        listeEquipesPays.add(req2.getString("equipe.nom"));
                     }
-                    listeEquipesPays.clear();
-                    try (ResultSet req2 = BDD.getStatement().executeQuery("SELECT distinct equipe.nom, equipe.id from equipe,championnat, pays where championnat.idPays =" + i + " and championnat.id = equipe.idChampionnat and championnat.niveau = 2;")) {
-                        while (req2.next()) {
-                            listeEquipesPays.add(req2.getString("equipe.nom"));
-                        }
-                        String[][] matchQualifs = new String[nombreMatchQualif][2];
-                        for (int j = 0; j < nombreMatchQualif; j++) {
-                            int rand = (int) (Math.random() * listeEquipesPays.size() - 1);
-                            matchQualifs[j][0] = listeEquipesPays.get(rand);
-                            listeEquipesPays.remove(rand);
-                            rand = (int) (Math.random() * listeEquipesPays.size() - 1);
-                            matchQualifs[j][1] = listeEquipesPays.get(rand);
-                            listeEquipesPays.remove(rand);
+                    System.out.println("\n" + coupeNationale);
+                    System.out.println("");
+                    nombreMatchQualif = (listeEquipesPays.size() - 32);
+                }
+                ArrayList<String> listeEquipes2 = new ArrayList<>();
+                try (ResultSet req2 = BDD.getStatement().executeQuery("SELECT distinct equipe.nom, equipe.id from equipe,championnat, pays where championnat.idPays =" + i + " and championnat.id = equipe.idChampionnat and championnat.niveau = 2;")) {
+                    while (req2.next()) {
+                        listeEquipes2.add(req2.getString("equipe.nom"));
+                    }
+                    String[][] matchQualifs = new String[nombreMatchQualif][2];
+                    for (int j = 0; j < nombreMatchQualif; j++) {
+                        int rand = (int) (Math.random() * listeEquipes2.size() - 1);
+                        matchQualifs[j][0] = listeEquipes2.get(rand);
+                        //listeEquipesPays.remove(listeEquipes2.get(rand));
+                        listeEquipes2.remove(rand);
+                        rand = (int) (Math.random() * listeEquipes2.size() - 1);
+                        matchQualifs[j][1] = listeEquipes2.get(rand);
+                        listeEquipesPays.remove(listeEquipes2.get(rand));
+                        listeEquipes2.remove(rand);
+                    }
 
-                        }
-                        for (int j = 0; j < nombreMatchQualif; j++) {
-                            System.out.println(matchQualifs[j][0] + " - " + matchQualifs[j][1]);
+                    String[] dates = new String[6];
+                    dates = Match.simulerDateCoupe(2015, idCoupe);
+                    System.out.println("Premier tout qualificatif Le " + dates[0]);
+                    for (int j = 0; j < nombreMatchQualif; j++) {
+                        System.out.println(matchQualifs[j][0] + " - " + matchQualifs[j][1]);
+                    }
+                   
+                    String[][] matchElim;
+                    while (listeEquipesPays.size() > 1) {
+                        listeEquipes2.clear();
+                        for (String clone : listeEquipesPays) {
+                            listeEquipes2.add(clone);
                         }
                         
-                        return matchQualifs;
+                       
+                        if (listeEquipesPays.size()/2 == 4){
+                            System.out.println("\nQuart de finale Le " + dates[3]);
+                        }else if (listeEquipesPays.size()/2 == 2){
+                            System.out.println("\nDemi finale Le " + dates[4]);
+                        }else if (listeEquipesPays.size()/2 == 1){
+                            System.out.println("\nFinale Le " + dates[5]);
+                        }else  if (listeEquipesPays.size()/2 == 1) {
+                            System.out.println("\n16ème de finale " + dates[1]);
+                        }else {System.out.println("\n8ème de finale " + dates[2]);}
+                       
+                        int nbmatch = listeEquipesPays.size()/2;
+                        matchElim = new String[listeEquipesPays.size()/2][2];
+                            for (int j = 0; j < nbmatch; j++) {
+                            int rand = (int) (Math.random() * listeEquipes2.size() - 1);
+                            matchElim[j][0] = listeEquipes2.get(rand);
+                            listeEquipes2.remove(rand);
+                            rand = (int) (Math.random() * listeEquipes2.size() - 1);
+                            matchElim[j][1] = listeEquipes2.get(rand);
+                            listeEquipesPays.remove(listeEquipes2.get(rand));
+                            listeEquipes2.remove(rand);
+                        }
+                        for (int k = 0; k < matchElim.length; k++) {
+                            System.out.println(matchElim[k][0] + " - " + matchElim[k][1]);
+                        }
                     }
-
                 }
             }
-return null;
-}
+        }
+    }
     public static void initChampionnat(int annee) throws Exception {
         BDD BDD = new BDD();
         String[] date = Match.simulerDate(annee);
@@ -128,4 +160,4 @@ return null;
         BDD.closeConnection();
     }
 
- }
+}
