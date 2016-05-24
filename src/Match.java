@@ -1,4 +1,5 @@
 
+
 import java.sql.ResultSet;
 import java.util.Calendar;
 
@@ -94,10 +95,53 @@ public class Match {
         } else {
             res[1] = 8;
         }
-
+        
         System.out.println(res[0] + " " + res[1]);
 
         return res;
+    }
+    public static int[] simulerProlongations(int[] resultatAvantPronlongations) {
+    int[] resultatApresPronlongations = new int[2];
+    double i = Math.random() * 100;
+        if (i < 70) {
+            resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 0;
+        } else if (i < 90) {
+            resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 1;
+        } else if (i < 98) {
+            resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 2;
+        }
+        else resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 3;
+
+        i = Math.random() * 100;
+
+        if (i < 75) {
+            resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 0;
+        } else if (i < 95) {
+            resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 1;
+        } else if (i < 99) {
+            resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 2;
+        } else resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 3;
+
+        return resultatApresPronlongations;
+    }
+    
+    public static int[] simulerTAB(){
+        int[] nbTAB = new int[2];
+        nbTAB[0] = 0;
+        nbTAB[1] = 0;
+        for (int i = 5; i > 0; i--){
+            if (Math.random()*2>0.5) nbTAB[0]++;
+            if (Math.random()*2>0.5) nbTAB[1]++;
+            if (i<(Math.abs(nbTAB[0]-nbTAB[1]))){
+                return nbTAB;
+            }
+        }
+        if (nbTAB[0] == nbTAB[1]){
+            if (Math.random()*2>1) nbTAB[0]++;
+            else nbTAB[1]++;
+        }
+        
+        return nbTAB; 
     }
 
     public static String[] simulerDate(int annee) {
@@ -137,3 +181,5 @@ public class Match {
         return date;
     }
 }
+
+
