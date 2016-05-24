@@ -29,16 +29,14 @@ public class Main {
             }
         }
         int nbjour = listeEquipes.size()-1;
-        System.out.println(nbjour);
         String[][] matches = new String[((listeEquipes.size())/2)][2];
-        System.out.println(matches.length);
         for (int i = 0; i<matches.length ; i++){
             for (int j = 0; j< matches[i].length; j++){
                 matches[i][j] = new String(listeEquipes.get(0).toString());
                 listeEquipes.remove(0);
             }
         }
-       System.out.println("\n-------------------- Championnat " +k);
+       System.out.println("\n-------------------- Championnat " +k + " --------------------");
       for(int i =0; i<matches.length;i++)System.out.println(matches[i][0] + " - " + matches[i][1]);
             
         for (int j = 1; j<=nbjour*2;j++){
