@@ -5,7 +5,64 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+
+        String[][] res = null;
+        res = initCoupe(98);
+        initChampionnat(2015);
+        
+       }
+    
+    
+    
+public static String[][] initCoupe(int idCoupe) throws Exception{
+            BDD BDD = new BDD();
+        int i = 0;
+        ArrayList<String> listeCoupeNationale = new ArrayList<>();
+        try (ResultSet req = BDD.getStatement().executeQuery("SELECT nom, idPays FROM coupeNationale where id = " + idCoupe + ";")){
+                while (req.next()) {
+                    listeCoupeNationale.add(req.getString("nom"));
+                    i = req.getInt("idPays");
+                }
+                for (String coupeNationale : listeCoupeNationale) {
+                    ArrayList<String> listeEquipesPays = new ArrayList<>();
+                    int nombreMatchQualif;
+                    try (ResultSet req2 = BDD.getStatement().executeQuery("SELECT distinct equipe.nom, equipe.id from equipe,championnat, pays where championnat.idPays =" + i + " and championnat.id = equipe.idChampionnat;")) {
+                        while (req2.next()) {
+                            listeEquipesPays.add(req2.getString("equipe.nom"));
+                        }
+                        System.out.println("\n" + coupeNationale);
+                        System.out.println(listeEquipesPays.size() - 32);
+                        nombreMatchQualif = (listeEquipesPays.size() - 32);
+                    }
+                    listeEquipesPays.clear();
+                    try (ResultSet req2 = BDD.getStatement().executeQuery("SELECT distinct equipe.nom, equipe.id from equipe,championnat, pays where championnat.idPays =" + i + " and championnat.id = equipe.idChampionnat and championnat.niveau = 2;")) {
+                        while (req2.next()) {
+                            listeEquipesPays.add(req2.getString("equipe.nom"));
+                        }
+                        String[][] matchQualifs = new String[nombreMatchQualif][2];
+                        for (int j = 0; j < nombreMatchQualif; j++) {
+                            int rand = (int) (Math.random() * listeEquipesPays.size() - 1);
+                            matchQualifs[j][0] = listeEquipesPays.get(rand);
+                            listeEquipesPays.remove(rand);
+                            rand = (int) (Math.random() * listeEquipesPays.size() - 1);
+                            matchQualifs[j][1] = listeEquipesPays.get(rand);
+                            listeEquipesPays.remove(rand);
+
+                        }
+                        for (int j = 0; j < nombreMatchQualif; j++) {
+                            System.out.println(matchQualifs[j][0] + " - " + matchQualifs[j][1]);
+                        }
+                        
+                        return matchQualifs;
+                    }
+
+                }
+            }
+return null;
+}
+    public static void initChampionnat(int annee) throws Exception {
         BDD BDD = new BDD();
+        String[] date = Match.simulerDate(annee);
         ArrayList<String> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
 
@@ -55,7 +112,7 @@ public class Main {
                     }
 
                 }
-                System.out.println("\nJournee " + j);
+                System.out.println("\nJournee " + j + "\t\tLe " + date[j - 1]);
                 if (j > nbjour) {
                     for (String[] matche : matches) {
                         System.out.println(matche[1] + " - " + matche[0]);
@@ -71,4 +128,4 @@ public class Main {
         BDD.closeConnection();
     }
 
-}
+ }
