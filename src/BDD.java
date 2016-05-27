@@ -22,6 +22,10 @@ public class BDD {
         return statement;
     }
 
+    public Connection getConnection() {
+        return connection;
+    }
+
     public void closeConnection() throws Exception {
         if (statement != null) {
             statement.close();
