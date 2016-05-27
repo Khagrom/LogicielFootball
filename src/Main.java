@@ -1,14 +1,12 @@
 
-import java.sql.ResultSet;
+import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-
-        String[][] res = null;
-        initCoupe(1);
-
+        initChampionnat(2015);
     }
 
     public static void initCoupe(int idCoupe) throws Exception {
@@ -48,34 +46,35 @@ public class Main {
                         listeEquipes2.remove(rand);
                     }
 
-                    String[] dates = new String[6];
+                    java.sql.Date[] dates = new java.sql.Date[6];
                     dates = Match.simulerDateCoupe(2015, idCoupe);
                     System.out.println("Premier tout qualificatif Le " + dates[0]);
                     for (int j = 0; j < nombreMatchQualif; j++) {
                         System.out.println(matchQualifs[j][0] + " - " + matchQualifs[j][1]);
                     }
-                   
+
                     String[][] matchElim;
                     while (listeEquipesPays.size() > 1) {
                         listeEquipes2.clear();
                         for (String clone : listeEquipesPays) {
                             listeEquipes2.add(clone);
                         }
-                        
-                       
-                        if (listeEquipesPays.size()/2 == 4){
+
+                        if (listeEquipesPays.size() / 2 == 4) {
                             System.out.println("\nQuart de finale Le " + dates[3]);
-                        }else if (listeEquipesPays.size()/2 == 2){
+                        } else if (listeEquipesPays.size() / 2 == 2) {
                             System.out.println("\nDemi finale Le " + dates[4]);
-                        }else if (listeEquipesPays.size()/2 == 1){
+                        } else if (listeEquipesPays.size() / 2 == 1) {
                             System.out.println("\nFinale Le " + dates[5]);
-                        }else  if (listeEquipesPays.size()/2 == 1) {
+                        } else if (listeEquipesPays.size() / 2 == 1) {
                             System.out.println("\n16ème de finale " + dates[1]);
-                        }else {System.out.println("\n8ème de finale " + dates[2]);}
-                       
-                        int nbmatch = listeEquipesPays.size()/2;
-                        matchElim = new String[listeEquipesPays.size()/2][2];
-                            for (int j = 0; j < nbmatch; j++) {
+                        } else {
+                            System.out.println("\n8ème de finale " + dates[2]);
+                        }
+
+                        int nbmatch = listeEquipesPays.size() / 2;
+                        matchElim = new String[listeEquipesPays.size() / 2][2];
+                        for (int j = 0; j < nbmatch; j++) {
                             int rand = (int) (Math.random() * listeEquipes2.size() - 1);
                             matchElim[j][0] = listeEquipes2.get(rand);
                             listeEquipes2.remove(rand);
@@ -92,10 +91,11 @@ public class Main {
             }
         }
     }
+
     public static void initChampionnat(int annee) throws Exception {
         BDD BDD = new BDD();
-        String[] date = Match.simulerDate(annee);
-        ArrayList<String> listeEquipes = new ArrayList<>();
+        java.sql.Date[] date = Match.simulerDate(annee);
+        ArrayList<Integer> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
 
         try (ResultSet req = BDD.getStatement().executeQuery("SELECT count(id) FROM championnat;")) {
@@ -106,29 +106,26 @@ public class Main {
 
         for (int k = 1; k <= nbChampionnats; k++) {
             for (int i = k; i <= k; i++) {
-                try (ResultSet req = BDD.getStatement().executeQuery("SELECT nom FROM equipe WHERE idChampionnat = " + i + ";")) {
+                try (ResultSet req = BDD.getStatement().executeQuery("SELECT id FROM equipe WHERE idChampionnat = " + i + ";")) {
                     while (req.next()) {
-                        listeEquipes.add(req.getString("nom"));
+                        listeEquipes.add(req.getInt("id"));
                     }
                 }
             }
 
             int nbjour = listeEquipes.size() - 1;
-            String[][] matches = new String[((listeEquipes.size()) / 2)][2];
-            for (String[] matche : matches) {
+            int[][] matches = new int[((listeEquipes.size()) / 2)][2];
+            for (int[] matche : matches) {
                 for (int j = 0; j < matche.length; j++) {
                     matche[j] = listeEquipes.get(0);
                     listeEquipes.remove(0);
                 }
             }
-            System.out.println("\n-------------------- Championnat " + k + " --------------------");
-            for (String[] matche : matches) {
-                System.out.println(matche[0] + " - " + matche[1]);
-            }
-
+            System.out.println("\n"+(k - 1) * 100 / nbChampionnats + "%");
             for (int j = 1; j <= nbjour * 2; j++) {
-                String temp = "";
-                String temp2;
+                
+                int temp = 0;
+                int temp2;
                 for (int l = matches.length - 1; l >= 0; l--) {
                     if (l == matches.length - 1) {
                         temp = matches[l][0];
@@ -144,14 +141,40 @@ public class Main {
                     }
 
                 }
-                System.out.println("\nJournee " + j + "\t\tLe " + date[j - 1]);
+                if (j%2==0) System.out.print("   "+(int)(((double)(j-1)/(nbjour*2))*100)+"%");
                 if (j > nbjour) {
-                    for (String[] matche : matches) {
-                        System.out.println(matche[1] + " - " + matche[0]);
+                    
+                    for (int[] match : matches) {
+                      try {
+                            String query = "INSERT INTO `rencontre`(`idEquipe1`, `idEquipe2`, `idCompetition`, `idGroupeArbitre`, `journee`, `date`) values (?,?,?,?,?,?);";
+                            PreparedStatement ps = BDD.getConnection().prepareStatement(query);
+                            ps.setInt(1, match[1]);
+                            ps.setInt(2, match[0]);
+                            ps.setInt(3, k);
+                            ps.setInt(4, 1);
+                            ps.setInt(5, j);
+                            ps.setDate(6, date[j-1]);
+                            ps.execute();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 } else {
-                    for (String[] matche : matches) {
-                        System.out.println(matche[0] + " - " + matche[1]);
+                    for (int[] match : matches) {
+                       try {
+                            String query = "INSERT INTO rencontre(idEquipe1, idEquipe2, idCompetition, idGroupeArbitre, journee, date) values (?, ?, ?, ?, ?, ?)";
+                            PreparedStatement ps = BDD.getConnection().prepareStatement(query);
+                            ps.setInt(1, match[0]);
+                            ps.setInt(2, match[1]);
+                            ps.setInt(3, k);
+                            ps.setInt(4, 1);
+                            ps.setInt(5, j);
+                            ps.setDate(6, date[j - 1]);
+                            ps.execute();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+
+                        }
                     }
                 }
             }
