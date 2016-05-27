@@ -6,7 +6,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        initGroupeCoupeEurope("EL");
+        initChampionnat(2015);
     }
 
     public static void initGroupeCoupeEurope(String nomCoupe) throws Exception {
@@ -150,13 +150,28 @@ public class Main {
         }
 
         for (int k = 1; k <= nbChampionnats; k++) {
-            for (int i = k; i <= k; i++) {
-                try (ResultSet req = BDD.getStatement().executeQuery("SELECT id FROM equipe WHERE idChampionnat = " + i + ";")) {
+            if(k!=11){
+            
+                try (ResultSet req = BDD.getStatement().executeQuery("SELECT id FROM equipe WHERE idChampionnat = " + k + ";")) {
                     while (req.next()) {
                         listeEquipes.add(req.getInt("id"));
                     }
                 }
-            }
+              for (int equipe : listeEquipes) {
+                        try {
+                            String query = "INSERT INTO `classement`(`idEquipe`, `championnat`, `annee`, `points`, `butPour`, `butContre`) VALUES (?,?,?,?,?,?)";
+                            PreparedStatement ps = BDD.getConnection().prepareStatement(query);
+                            ps.setInt(1, equipe);
+                            ps.setInt(2, k);
+                            ps.setInt(3, annee);
+                            ps.setInt(4, 0);
+                            ps.setInt(5, 0);
+                            ps.setInt(6, 0);
+                            ps.execute();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+              }
 
             int nbjour = listeEquipes.size() - 1;
             int[][] matches = new int[((listeEquipes.size()) / 2)][2];
@@ -226,7 +241,7 @@ public class Main {
                 }
             }
         }
-
+        }
         BDD.closeConnection();
     }
 
