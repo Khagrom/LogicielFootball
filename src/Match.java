@@ -1,5 +1,4 @@
 
-
 import java.sql.ResultSet;
 import java.util.Calendar;
 
@@ -95,22 +94,24 @@ public class Match {
         } else {
             res[1] = 8;
         }
-        
+
         System.out.println(res[0] + " " + res[1]);
 
         return res;
     }
+
     public static int[] simulerProlongations(int[] resultatAvantPronlongations) {
-    int[] resultatApresPronlongations = new int[2];
-    double i = Math.random() * 100;
+        int[] resultatApresPronlongations = new int[2];
+        double i = Math.random() * 100;
         if (i < 70) {
             resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 0;
         } else if (i < 90) {
             resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 1;
         } else if (i < 98) {
             resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 2;
+        } else {
+            resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 3;
         }
-        else resultatApresPronlongations[0] = resultatAvantPronlongations[0] + 3;
 
         i = Math.random() * 100;
 
@@ -120,47 +121,67 @@ public class Match {
             resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 1;
         } else if (i < 99) {
             resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 2;
-        } else resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 3;
+        } else {
+            resultatApresPronlongations[1] = resultatAvantPronlongations[1] + 3;
+        }
 
         return resultatApresPronlongations;
     }
-    
-    public static int[] simulerTAB(){
+
+    public static int[] simulerTAB() {
         int[] nbTAB = new int[2];
         nbTAB[0] = 0;
         nbTAB[1] = 0;
-        for (int i = 5; i > 0; i--){
-            if (Math.random()*2>0.5) nbTAB[0]++;
-            if (Math.random()*2>0.5) nbTAB[1]++;
-            if (i<(Math.abs(nbTAB[0]-nbTAB[1]))){
+        for (int i = 5; i > 0; i--) {
+            if (Math.random() * 2 > 0.5) {
+                nbTAB[0]++;
+            }
+            if (Math.random() * 2 > 0.5) {
+                nbTAB[1]++;
+            }
+            if (i < (Math.abs(nbTAB[0] - nbTAB[1]))) {
                 return nbTAB;
             }
         }
-        if (nbTAB[0] == nbTAB[1]){
-            if (Math.random()*2>1) nbTAB[0]++;
-            else nbTAB[1]++;
+        if (nbTAB[0] == nbTAB[1]) {
+            if (Math.random() * 2 > 1) {
+                nbTAB[0]++;
+            } else {
+                nbTAB[1]++;
+            }
         }
-        
-        return nbTAB; 
+
+        return nbTAB;
     }
 
-    public static String[] simulerDate(int annee) {
-        String[] date = new String[46];
+    public static java.sql.Date[] simulerDate(int annee) {
+        java.sql.Date[] date = new java.sql.Date[46];
         Calendar calendar = Calendar.getInstance();
         calendar.set(annee, 7, 0);
         while (calendar.get(Calendar.DAY_OF_WEEK) != 7) {
             calendar.add(Calendar.DAY_OF_WEEK, 1);
         }
         for (int i = 1; i <= 46; i++) {
-            String dateFormater = calendar.get(Calendar.DATE) + "/" + (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
-            date[i - 1] = dateFormater;
-            calendar.add(Calendar.DATE, 7);
+            if (Calendar.MONTH < 10 && Calendar.DATE < 10) {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            } else if (Calendar.MONTH < 10) {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            } else if (Calendar.DATE < 10) {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            } else {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            }
+
         }
         return date;
     }
 
-    public static String[] simulerDateCoupe(int annee, int numCoupe) {
-        String[] date = new String[6];
+    public static java.sql.Date[] simulerDateCoupe(int annee, int numCoupe) {
+        java.sql.Date[] date = new java.sql.Date[6];
         Calendar calendar = Calendar.getInstance();
         if (numCoupe == 2) {
             calendar.set(annee, 9, 1);
@@ -168,18 +189,26 @@ public class Match {
                 calendar.add(Calendar.DAY_OF_WEEK, 1);
             }
         } else {
-            calendar.set(annee+1, 2, 0);
+            calendar.set(annee + 1, 2, 0);
             while (calendar.get(Calendar.DAY_OF_WEEK) != 4) {
                 calendar.add(Calendar.DAY_OF_WEEK, 1);
             }
         }
         for (int i = 1; i <= 6; i++) {
-            String dateFormater = calendar.get(Calendar.DATE) + "/" + (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
-            date[i - 1] = dateFormater;
-            calendar.add(Calendar.DATE, 7);
+            if (Calendar.MONTH < 10 && Calendar.DATE < 10) {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            } else if (Calendar.MONTH < 10) {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            } else if (Calendar.DATE < 10) {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            } else {
+                date[i - 1] = new java.sql.Date(calendar.getTimeInMillis());
+                calendar.add(Calendar.DATE, 7);
+            }
         }
         return date;
     }
 }
-
-
