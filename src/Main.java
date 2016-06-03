@@ -140,6 +140,8 @@ public class Main {
     public static void initClassement(int annee) throws Exception{
         
         BDD BDD = new BDD();
+        BDD.getConnection().prepareStatement("DELETE FROM rencontre;").execute();
+        BDD.getConnection().prepareStatement("DELETE FROM classement;").execute();
         java.sql.Date[] date = Match.simulerDate(annee);
         ArrayList<Integer> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
