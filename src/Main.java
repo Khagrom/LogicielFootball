@@ -6,7 +6,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        initChampionnat(2015);
+        majClassement(2015);
     }
 
     public static void initGroupeCoupeEurope(String nomCoupe) throws Exception {
@@ -136,13 +136,14 @@ public class Main {
             }
         }
     }
-
-    public static void initChampionnat(int annee) throws Exception {
+    
+    public static void initClassement(int annee) throws Exception{
+        
         BDD BDD = new BDD();
         java.sql.Date[] date = Match.simulerDate(annee);
         ArrayList<Integer> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
-
+        BDD.getStatement().executeUpdate("DELETE FROM classement where annee = "+annee+";");
         try (ResultSet req = BDD.getStatement().executeQuery("SELECT count(id) FROM championnat;")) {
             while (req.next()) {
                 nbChampionnats = req.getInt("count(id)");
@@ -172,6 +173,34 @@ public class Main {
                             e.printStackTrace();
                         }
               }
+        }
+        }
+        BDD.closeConnection();
+        
+    }
+
+    public static void initChampionnat(int annee) throws Exception {
+        BDD BDD = new BDD();
+        java.sql.Date[] date = Match.simulerDate(annee);
+        ArrayList<Integer> listeEquipes = new ArrayList<>();
+        int nbChampionnats = 0;
+
+        try (ResultSet req = BDD.getStatement().executeQuery("SELECT count(id) FROM championnat;")) {
+            while (req.next()) {
+                nbChampionnats = req.getInt("count(id)");
+            }
+        }
+
+        for (int k = 1; k <= nbChampionnats; k++) {
+            if(k!=11){
+                
+                initClassement(annee);
+            
+                try (ResultSet req = BDD.getStatement().executeQuery("SELECT id FROM equipe WHERE idChampionnat = " + k + ";")) {
+                    while (req.next()) {
+                        listeEquipes.add(req.getInt("id"));
+                    }
+                }
 
             int nbjour = listeEquipes.size() - 1;
             int[][] matches = new int[((listeEquipes.size()) / 2)][2];
@@ -245,4 +274,40 @@ public class Main {
         BDD.closeConnection();
     }
 
+    public static void majClassement(int annee) throws Exception{
+        BDD BDD = new BDD();
+        BDD update = new BDD();
+        initClassement(annee);
+        try{
+            ResultSet req = (BDD.getStatement().executeQuery("Select * from rencontre where journee is not null and butEquipe1 is not null and butEquipe2 is not null"));
+        
+        int[] point = new int[2];
+        while (req.next()){
+            System.out.println(req.getInt("butEquipe1"));
+            if (req.getInt("butEquipe1") == req.getInt("butEquipe2")){
+                    point[0] = 1;
+                    point[1] = 1;
+                
+            }else if (req.getInt("butEquipe1") > req.getInt("butEquipe2")){
+                    point[0] = 3;
+                    point[1] = 0;
+                
+                
+            }else {
+                    point[0] = 0;
+                    point[1] = 3;
+            }
+                int executeUpdate ;
+                executeUpdate = update.getStatement().executeUpdate("UPDATE `classement` SET `points`=`points`+"+point[0]+",`butPour`= `butPour` + "+req.getInt("butEquipe1")+",`butContre`=`butContre`+"+req.getInt("butEquipe2")+" WHERE `idEquipe` = "+req.getInt("idEquipe1")+" and `annee` = "+annee+";");
+                executeUpdate = update.getStatement().executeUpdate("UPDATE `classement` SET `points`=`points`+"+point[1]+",`butPour`= `butPour` + "+req.getInt("butEquipe2")+",`butContre`=`butContre`+"+req.getInt("butEquipe1")+" WHERE `idEquipe` = "+req.getInt("idEquipe2")+" and `annee` = "+annee+";");  
+                
+        }
+        
+        }
+        catch (Exception e){
+                e.printStackTrace();
+                }
+       BDD.closeConnection();
+        
+    }
 }
