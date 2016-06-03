@@ -140,8 +140,8 @@ public class Main {
     public static void initClassement(int annee) throws Exception{
         
         BDD BDD = new BDD();
-        BDD.getConnection().prepareStatement("DELETE FROM rencontre;").execute();
-        BDD.getConnection().prepareStatement("DELETE FROM classement;").execute();
+        BDD.getConnection().prepareStatement("DELETE FROM rencontre where annee = "+annee+";").execute();
+        BDD.getConnection().prepareStatement("DELETE FROM classement where annee = "+annee+";").execute();
         java.sql.Date[] date = Match.simulerDate(annee);
         ArrayList<Integer> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
@@ -186,6 +186,7 @@ public class Main {
         java.sql.Date[] date = Match.simulerDate(annee);
         ArrayList<Integer> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
+        initClassement(annee);
 
         try (ResultSet req = BDD.getStatement().executeQuery("SELECT count(id) FROM championnat;")) {
             while (req.next()) {
@@ -196,7 +197,6 @@ public class Main {
         for (int k = 1; k <= nbChampionnats; k++) {
             if(k!=11){
                 
-                initClassement(annee);
             
                 try (ResultSet req = BDD.getStatement().executeQuery("SELECT id FROM equipe WHERE idChampionnat = " + k + ";")) {
                     while (req.next()) {
