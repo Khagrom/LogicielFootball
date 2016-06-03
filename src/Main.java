@@ -140,8 +140,7 @@ public class Main {
     public static void initClassement(int annee) throws Exception{
         
         BDD BDD = new BDD();
-        BDD.getConnection().prepareStatement("DELETE FROM rencontre where annee = "+annee+";").execute();
-        BDD.getConnection().prepareStatement("DELETE FROM classement where annee = "+annee+";").execute();
+        BDD.getStatement().executeUpdate("DELETE FROM classement where annee = "+annee+";");
         java.sql.Date[] date = Match.simulerDate(annee);
         ArrayList<Integer> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
@@ -176,6 +175,7 @@ public class Main {
                         }
               }
         }
+            listeEquipes.clear();
         }
         BDD.closeConnection();
         
@@ -183,6 +183,7 @@ public class Main {
 
     public static void initChampionnat(int annee) throws Exception {
         BDD BDD = new BDD();
+        BDD.getStatement().executeUpdate("DELETE FROM rencontre where date between '"+(annee)+"-07-01' and '"+(annee+1)+"-07-01';");
         java.sql.Date[] date = Match.simulerDate(annee);
         ArrayList<Integer> listeEquipes = new ArrayList<>();
         int nbChampionnats = 0;
