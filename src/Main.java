@@ -313,4 +313,10 @@ public class Main {
        BDD.closeConnection();
         
     }
+    
+    public static void majScoreMatch(int idMatch, int nbButEquipe1, int nbButEquipe2,int annee, boolean actualiser) throws Exception{
+        BDD bdd = new BDD();
+        int executeUpdate = bdd.getStatement().executeUpdate("UPDATE `rencontre` SET `butEquipe1`= " +nbButEquipe1+",`butEquipe2`= "+nbButEquipe2+" WHERE `id` = "+idMatch+";");
+        if (actualiser) majClassement(annee);
+    }
 }
