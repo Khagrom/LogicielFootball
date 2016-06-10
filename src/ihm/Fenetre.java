@@ -6,35 +6,28 @@
 package ihm;
 
 import calcul.BDD;
-import static calcul.Main.initClassement;
+import calcul.Main;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
-import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -51,15 +44,11 @@ public final class Fenetre extends javax.swing.JFrame {
      */
     public Fenetre() throws Exception {
         initComponents();
-        initTable(tableChampionnat);
+        initTableChampionnat();
 
         BDD cnx = new BDD();
-        initClassement(2015);
 
         remplirComboBox(cnx, cbChampionnat, "SELECT nom FROM championnat where nom != \"Autres\";");
-        remplirComboBox(cnx, cbCoupeEurope, "SELECT nom FROM coupeEurope;");
-        remplirComboBox(cnx, cbCoupeNationale, "SELECT nom FROM coupeNationale;");
-        //tableChampionnat.setEnabled(false);
 
         cnx.closeConnection();
 
@@ -83,15 +72,15 @@ public final class Fenetre extends javax.swing.JFrame {
         tabbedPane = new javax.swing.JTabbedPane();
         pannelChampionnat = new javax.swing.JPanel();
         cbChampionnat = new javax.swing.JComboBox();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        taClassementChampionnat = new javax.swing.JTextArea();
         cbJourneeChampionnat = new javax.swing.JComboBox();
         jScrollPane4 = new javax.swing.JScrollPane();
         tableChampionnat = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tableClassement = new javax.swing.JTable();
         panelCoupeNationale = new javax.swing.JPanel();
-        cbCoupeNationale = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
         panelCoupeEurope = new javax.swing.JPanel();
-        cbCoupeEurope = new javax.swing.JComboBox();
+        jLabel2 = new javax.swing.JLabel();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -114,11 +103,6 @@ public final class Fenetre extends javax.swing.JFrame {
                 cbChampionnatActionPerformed(evt);
             }
         });
-
-        taClassementChampionnat.setEditable(false);
-        taClassementChampionnat.setColumns(20);
-        taClassementChampionnat.setRows(5);
-        jScrollPane1.setViewportView(taClassementChampionnat);
 
         cbJourneeChampionnat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -147,12 +131,48 @@ public final class Fenetre extends javax.swing.JFrame {
         if (tableChampionnat.getColumnModel().getColumnCount() > 0) {
             tableChampionnat.getColumnModel().getColumn(0).setResizable(false);
             tableChampionnat.getColumnModel().getColumn(1).setResizable(false);
-            tableChampionnat.getColumnModel().getColumn(2).setMinWidth(60);
-            tableChampionnat.getColumnModel().getColumn(2).setPreferredWidth(60);
-            tableChampionnat.getColumnModel().getColumn(2).setMaxWidth(60);
+            tableChampionnat.getColumnModel().getColumn(2).setMinWidth(50);
+            tableChampionnat.getColumnModel().getColumn(2).setPreferredWidth(50);
+            tableChampionnat.getColumnModel().getColumn(2).setMaxWidth(50);
             tableChampionnat.getColumnModel().getColumn(3).setMinWidth(100);
             tableChampionnat.getColumnModel().getColumn(3).setPreferredWidth(100);
             tableChampionnat.getColumnModel().getColumn(3).setMaxWidth(100);
+        }
+
+        tableClassement.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Pos.", "Club", "BP", "BC", "Diff.", "Points"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(tableClassement);
+        if (tableClassement.getColumnModel().getColumnCount() > 0) {
+            tableClassement.getColumnModel().getColumn(0).setMinWidth(45);
+            tableClassement.getColumnModel().getColumn(0).setPreferredWidth(45);
+            tableClassement.getColumnModel().getColumn(0).setMaxWidth(45);
+            tableClassement.getColumnModel().getColumn(1).setResizable(false);
+            tableClassement.getColumnModel().getColumn(2).setMinWidth(45);
+            tableClassement.getColumnModel().getColumn(2).setPreferredWidth(45);
+            tableClassement.getColumnModel().getColumn(2).setMaxWidth(45);
+            tableClassement.getColumnModel().getColumn(3).setMinWidth(45);
+            tableClassement.getColumnModel().getColumn(3).setPreferredWidth(45);
+            tableClassement.getColumnModel().getColumn(3).setMaxWidth(45);
+            tableClassement.getColumnModel().getColumn(4).setMinWidth(45);
+            tableClassement.getColumnModel().getColumn(4).setPreferredWidth(45);
+            tableClassement.getColumnModel().getColumn(4).setMaxWidth(45);
+            tableClassement.getColumnModel().getColumn(5).setMinWidth(45);
+            tableClassement.getColumnModel().getColumn(5).setPreferredWidth(45);
+            tableClassement.getColumnModel().getColumn(5).setMaxWidth(45);
         }
 
         javax.swing.GroupLayout pannelChampionnatLayout = new javax.swing.GroupLayout(pannelChampionnat);
@@ -164,10 +184,10 @@ public final class Fenetre extends javax.swing.JFrame {
                 .addGroup(pannelChampionnatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(cbChampionnat, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pannelChampionnatLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(pannelChampionnatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 527, Short.MAX_VALUE)
+                        .addGroup(pannelChampionnatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
                             .addComponent(cbJourneeChampionnat, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addGap(6, 6, 6))
         );
@@ -181,47 +201,53 @@ public final class Fenetre extends javax.swing.JFrame {
                     .addGroup(pannelChampionnatLayout.createSequentialGroup()
                         .addComponent(cbJourneeChampionnat, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE))
+                    .addComponent(jScrollPane2))
                 .addGap(6, 6, 6))
         );
 
         tabbedPane.addTab("Championnat", pannelChampionnat);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
+        jLabel1.setText("Work in progress");
 
         javax.swing.GroupLayout panelCoupeNationaleLayout = new javax.swing.GroupLayout(panelCoupeNationale);
         panelCoupeNationale.setLayout(panelCoupeNationaleLayout);
         panelCoupeNationaleLayout.setHorizontalGroup(
             panelCoupeNationaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCoupeNationaleLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(cbCoupeNationale, 0, 783, Short.MAX_VALUE)
-                .addGap(6, 6, 6))
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addContainerGap(626, Short.MAX_VALUE))
         );
         panelCoupeNationaleLayout.setVerticalGroup(
             panelCoupeNationaleLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCoupeNationaleLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(cbCoupeNationale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(346, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addContainerGap(405, Short.MAX_VALUE))
         );
 
         tabbedPane.addTab("Coupe Nationale", panelCoupeNationale);
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 48)); // NOI18N
+        jLabel2.setText("Work in progress");
 
         javax.swing.GroupLayout panelCoupeEuropeLayout = new javax.swing.GroupLayout(panelCoupeEurope);
         panelCoupeEurope.setLayout(panelCoupeEuropeLayout);
         panelCoupeEuropeLayout.setHorizontalGroup(
             panelCoupeEuropeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCoupeEuropeLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(cbCoupeEurope, 0, 783, Short.MAX_VALUE)
-                .addGap(6, 6, 6))
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addContainerGap(626, Short.MAX_VALUE))
         );
         panelCoupeEuropeLayout.setVerticalGroup(
             panelCoupeEuropeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelCoupeEuropeLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(cbCoupeEurope, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(346, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jLabel2)
+                .addContainerGap(405, Short.MAX_VALUE))
         );
 
         tabbedPane.addTab("Coupe d'Europe", panelCoupeEurope);
@@ -256,14 +282,24 @@ public final class Fenetre extends javax.swing.JFrame {
     private void cbJourneeChampionnatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbJourneeChampionnatActionPerformed
         try {
             BDD cnx = new BDD();
-            String query = "select equipe1.nom, equipe2.nom, concat_ws(cast(\" - \" as char), cast(butEquipe1 as char), cast(butEquipe2 as char)), cast(\"Modifier\" as char) from equipe as equipe1, equipe as equipe2, rencontre, championnat "
+            String queryJournees = "select equipe1.nom, equipe2.nom, concat_ws(cast(\" - \" as char), cast(butEquipe1 as char), cast(butEquipe2 as char)), cast(\"Modifier\" as char) from equipe as equipe1, equipe as equipe2, rencontre, championnat "
                     + "where rencontre.idEquipe1 = equipe1.id "
                     + "and rencontre.idEquipe2 = equipe2.id "
                     + "and rencontre.idCompetition = championnat.id "
                     + "and championnat.nom = \"" + cbChampionnat.getSelectedItem().toString() + "\" "
                     + "and date = \"" + cbJourneeChampionnat.getSelectedItem().toString() + "\";";
-            remplirTable(cnx, tableChampionnat, query);
-            updateRowHeights(tableChampionnat);
+            remplirTable(cnx, tableChampionnat, queryJournees);
+
+            Main.majClassement(2015);
+            String queryClassement = "select @rownum := @rownum + 1 as pos, equipe.nom, butPour, butContre, butPour-butContre as diff, points "
+                    + "from classement, equipe, championnat "
+                    + "cross join (select @rownum := 0) r "
+                    + "where classement.idEquipe = equipe.id "
+                    + "and annee = 2015 "
+                    + "and classement.championnat = championnat.id "
+                    + "and championnat.nom = \"" + cbChampionnat.getSelectedItem().toString() + "\" "
+                    + "order by points desc, diff desc, butPour desc;";
+            remplirTable(cnx, tableClassement, queryClassement);
             cnx.closeConnection();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -287,19 +323,12 @@ public final class Fenetre extends javax.swing.JFrame {
 
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Fenetre.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Fenetre.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Fenetre.class
-                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Fenetre.class
                     .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+
         //</editor-fold>
 
         /* Create and display the form */
@@ -340,6 +369,8 @@ public final class Fenetre extends javax.swing.JFrame {
                 ((DefaultTableModel) table.getModel()).insertRow(rs.getRow() - 1, row);
             }
         }
+
+        updateRowHeights(table);
     }
 
     public void updateRowHeights(JTable table) {
@@ -355,17 +386,23 @@ public final class Fenetre extends javax.swing.JFrame {
         }
     }
 
-    public void initTable(JTable table) {
+    public void initTableChampionnat() {
         Action edit = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String nomEquipe1 = table.getModel().getValueAt(table.getSelectedRow(), 0).toString();
-                String nomEquipe2 = table.getModel().getValueAt(table.getSelectedRow(), 1).toString();
+                String nomEquipe1 = tableChampionnat.getModel().getValueAt(tableChampionnat.getSelectedRow(), 0).toString();
+                String nomEquipe2 = tableChampionnat.getModel().getValueAt(tableChampionnat.getSelectedRow(), 1).toString();
 
                 JTextField tfEquipe1 = new JTextField(5);
                 JTextField tfEquipe2 = new JTextField(5);
-
+                try {
+                    tfEquipe1.setText(tableChampionnat.getModel().getValueAt(tableChampionnat.getSelectedRow(), 2).toString().substring(0, 2).trim());
+                    tfEquipe2.setText(tableChampionnat.getModel().getValueAt(tableChampionnat.getSelectedRow(), 2).toString().substring((tableChampionnat.getModel().getValueAt(tableChampionnat.getSelectedRow(), 2).toString().length()) - 2).trim());
+                } catch (Exception ex)  {
+                    tfEquipe1.setText("");
+                    tfEquipe2.setText("");
+                }
                 KeyListener kl = new KeyListener() {
                     @Override
                     public void keyTyped(KeyEvent e) {
@@ -425,8 +462,8 @@ public final class Fenetre extends javax.swing.JFrame {
                             String queryIdMatch = "SELECT rencontre.id FROM rencontre, equipe as equipe1, equipe as equipe2 "
                                     + "WHERE equipe1.id = rencontre.idEquipe1 "
                                     + "AND equipe2.id = rencontre.idEquipe2 "
-                                    + "AND equipe1.nom = \"" + table.getModel().getValueAt(table.getSelectedRow(), 0) + "\" "
-                                    + "AND equipe2.nom = \"" + table.getModel().getValueAt(table.getSelectedRow(), 1) + "\" "
+                                    + "AND equipe1.nom = \"" + tableChampionnat.getModel().getValueAt(tableChampionnat.getSelectedRow(), 0) + "\" "
+                                    + "AND equipe2.nom = \"" + tableChampionnat.getModel().getValueAt(tableChampionnat.getSelectedRow(), 1) + "\" "
                                     + "AND date = \"" + cbJourneeChampionnat.getSelectedItem().toString() + "\";";
                             int idMatch = -1;
                             try (ResultSet rs = cnx.getStatement().executeQuery(queryIdMatch)) {
@@ -438,14 +475,23 @@ public final class Fenetre extends javax.swing.JFrame {
                                 cnx.getStatement().executeUpdate("UPDATE `rencontre` SET `butEquipe1`= " + tfEquipe1.getText() + ",`butEquipe2`= " + tfEquipe2.getText() + " "
                                         + "WHERE `id` = " + idMatch + ";");
                             }
-                            String query = "select equipe1.nom, equipe2.nom, concat_ws(cast(\" - \" as char), cast(butEquipe1 as char), cast(butEquipe2 as char)), cast(\"Modifier\" as char) from equipe as equipe1, equipe as equipe2, rencontre, championnat "
+                            String queryJournees = "select equipe1.nom, equipe2.nom, concat_ws(cast(\" - \" as char), cast(butEquipe1 as char), cast(butEquipe2 as char)), cast(\"Modifier\" as char) from equipe as equipe1, equipe as equipe2, rencontre, championnat "
                                     + "where rencontre.idEquipe1 = equipe1.id "
                                     + "and rencontre.idEquipe2 = equipe2.id "
                                     + "and rencontre.idCompetition = championnat.id "
                                     + "and championnat.nom = \"" + cbChampionnat.getSelectedItem().toString() + "\" "
                                     + "and date = \"" + cbJourneeChampionnat.getSelectedItem().toString() + "\";";
-                            remplirTable(cnx, tableChampionnat, query);
-                            updateRowHeights(tableChampionnat);
+                            remplirTable(cnx, tableChampionnat, queryJournees);
+                            Main.majClassement(2015);
+                            String queryClassement = "select @rownum := @rownum + 1 as pos, equipe.nom, butPour, butContre, butPour-butContre as diff, points "
+                                    + "from classement, equipe, championnat "
+                                    + "cross join (select @rownum := 0) r "
+                                    + "where classement.idEquipe = equipe.id "
+                                    + "and annee = 2015 "
+                                    + "and classement.championnat = championnat.id "
+                                    + "and championnat.nom = \"" + cbChampionnat.getSelectedItem().toString() + "\" "
+                                    + "order by points desc, diff desc;";
+                            remplirTable(cnx, tableClassement, queryClassement);
                             cnx.closeConnection();
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -462,29 +508,27 @@ public final class Fenetre extends javax.swing.JFrame {
         };
 
         ButtonColumn buttonColumn = new ButtonColumn(tableChampionnat, edit, 3);
-
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-
         tableChampionnat.setDefaultRenderer(Object.class, centerRenderer);
+        tableClassement.setDefaultRenderer(Object.class, centerRenderer);
     }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbChampionnat;
-    private javax.swing.JComboBox cbCoupeEurope;
-    private javax.swing.JComboBox cbCoupeNationale;
     private javax.swing.JComboBox cbJourneeChampionnat;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTable1;
     private javax.swing.JPanel panelCoupeEurope;
     private javax.swing.JPanel panelCoupeNationale;
     private javax.swing.JPanel pannelChampionnat;
-    private javax.swing.JTextArea taClassementChampionnat;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JTable tableChampionnat;
+    private javax.swing.JTable tableClassement;
     // End of variables declaration//GEN-END:variables
 }
